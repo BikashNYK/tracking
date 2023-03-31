@@ -24,7 +24,7 @@ export const projectReducer = (state = initialState , action)=>{
             ...state,
            timer : {
             ...state.timer,
-            [payload.taskId]:{
+            time:{
                 projectId : payload.projectId,
                 startTime : payload.startTime,
             }
@@ -36,7 +36,7 @@ export const projectReducer = (state = initialState , action)=>{
                 ...state,
                 timer: {
                     ...state.timer,
-                    [payload.taskId]: {
+                    stopTimer : {
                         ...state.timer[payload.taskId],
                         endTime: payload.endTime,
                         totalTime: totalTime,

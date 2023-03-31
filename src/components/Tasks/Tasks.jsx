@@ -5,13 +5,12 @@ import { addTask, startTimer, stopTimer } from '../actionType/dispatchAction';
 const Tasks = () => {
     const [taskName, setTaskName] = useState('')
     const [taskId, setTaskId] = useState('')
-    console.log(taskId);
+    // console.log(taskId);
     
     const dispatch = useDispatch()
     const projects = useSelector((state) => state.projectReducer.projects)
     const tasks = useSelector((state) => state.projectReducer.tasks);
     const timer = useSelector((state) => state.projectReducer.timer);
-    console.log(timer);
     
     const handleTaskSubmit = (e) => {
         e.preventDefault();
@@ -31,7 +30,14 @@ const Tasks = () => {
         dispatch(stopTimer(id, new Date().getTime()));
     }
 
-
+    const startTimeInMillis = timer?.time?.startTime;
+    // console.log(startTimeInMillis)
+    const today = new Date(startTimeInMillis)
+    // console.log(today.getHours());
+    const hour = today.getHours()
+    const minute = today.getMinutes()
+    const sec = today.getSeconds()
+    
   return (
     <div>
           <h3>Tasks</h3>
@@ -40,10 +46,10 @@ const Tasks = () => {
   return (
     <li key={task.id}>
       {task.name} -{' '}
-      {task.timer && task.timer.totalTime
-        ? `${task.timer.totalTime} hours`
+      {timer && timer.time && task.id
+              ? `${hour}: ${minute} : ${sec} sec`
         : ''}
-      {task.timer && (
+          {timer && timer.time && (
         <button onClick={() => handleTaskStop(task.id)}>Stop</button>
       )}
     </li>
