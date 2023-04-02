@@ -1,78 +1,110 @@
-import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { addTask, startTimer, stopTimer } from '../actionType/dispatchAction';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { addTask, stopTimer } from '../actionType/dispatchAction';
 
 const Tasks = () => {
-    const [taskName, setTaskName] = useState('')
-    const [taskId, setTaskId] = useState('')
-    // console.log(taskId);
-    
-    const dispatch = useDispatch()
-    const projects = useSelector((state) => state.projectReducer.projects)
-    const tasks = useSelector((state) => state.projectReducer.tasks);
-    const timer = useSelector((state) => state.projectReducer.timer);
-    
-    const handleTaskSubmit = (e) => {
-        e.preventDefault();
-        const task = {
-            id: Date.now(),
-            name : taskName,
-            projectId : taskId
-        }
-        dispatch(addTask(task))
-        // task.id, task.projectId, new Date().getTime()
-        dispatch(startTimer(task))
-        setTaskName('')
-        setTaskId('')
-    }
+  const [taskName, setTaskName] = useState('');
+  const [taskId, setTaskId] = useState('');
 
-    const handleTaskStop = (id) =>{
-        dispatch(stopTimer(id, new Date().getTime()));
-    }
+  const dispatch = useDispatch();
+  const projects = useSelector((state) => state.projectReducer.projects);
+  const tasks = useSelector((state) => state.projectReducer.tasks);
+  const timer = useSelector((state) => state.projectReducer.timer);
+  const [addTaskBtn, setAddTaskBtn] = useState(false);
 
-    const startTimeInMillis = timer?.time?.startTime;
-    // console.log(startTimeInMillis)
-    const today = new Date(startTimeInMillis)
-    // console.log(today.getHours());
-    const hour = today.getHours()
-    const minute = today.getMinutes()
-    const sec = today.getSeconds()
-    
+  const handleTaskInput = (e) => {
+    if (e.target.value.length === 0) {
+      setAddTaskBtn(false);
+      setTaskName('');
+    } else {
+      setTaskName(e.target.value);
+      setAddTaskBtn(true);
+    }
+  };
+
+  const handleTaskId = (e) => {
+    setTaskId(e.target.value);
+  };
+
+  const handleTaskSubmit = (e) => {
+    e.preventDefault();
+
+    const now = new Date();
+    const task = {
+      id: tasks.length + 1,
+      name: taskName,
+      projectId: taskId,
+      startTime: now,
+      stopTime: null
+    };
+    dispatch(addTask(task));
+    setTaskName('');
+    setTaskId('');
+  };
+
+  const handleTaskStop = (id) => {
+    dispatch(stopTimer(id));
+  };
+
   return (
     <div>
-          <h3>Tasks</h3>
-          <ul>
-{tasks?.map((task) => {
-  return (
-    <li key={task.id}>
-      {task.name} -{' '}
-      {timer && timer.time && task.id
-              ? `${hour}: ${minute} : ${sec} sec`
-        : ''}
-          {timer && timer.time && (
-        <button onClick={() => handleTaskStop(task.id)}>Stop</button>
-      )}
-    </li>
-  );
-})}
+      <h3>Tasks</h3>
+      <form onSubmit={handleTaskSubmit}>
+        <input
+          type="text"
+          placeholder="Task Name"
+          value={taskName}
+          onChange={handleTaskInput}
+        />
+        <select value={taskId} onChange={handleTaskId}>
+          <option value="">Select Project</option>
+          {projects.map((project) => (
+            <option key={project.id} value={project.id}>
+              {project.name}
+            </option>
+          ))}
+        </select>
+        {addTaskBtn &&
+          <button type="submit">Add Task</button>
+        }
+      </form>
+      <table style={{ width: '90%', textAlign: 'center', marginTop: '30px' }}>
+        <thead>
+          <tr>
+            <th>Task Name</th>
+            <th>Starting Time</th>
+            <th>Ending Time</th>
+            <th>Total Time Spent</th>
+            <th>Stopper</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tasks?.map((task) => {
+            const taskTimer = task.startTime;
+            if (!taskTimer) {
+              return null;
+            }
+            const startTime = new Date(task.startTime);
+            const stopTime = new Date(task.stopTime);
+            const totalSpentTime = stopTime - startTime;
+            console.log(totalSpentTime);
 
-            
-          </ul>
-
-          <form onSubmit={handleTaskSubmit}>
-              <input type="text" placeholder='Task Name' value={taskName} onChange={(e) => setTaskName(e.target.value)} />
-              <select value={taskId} onChange={(e) => setTaskId(e.target.value)}>
-                  <option value="">Select Project</option>
-                  {projects.map((project) => (
-                      <option key={project.id} value={project.id}>
-                          {project.name}
-                      </option>
-                  ))}
-              </select>
-              <button type="submit">Add Task</button>
-          </form>
+            return (
+              <tr key={task.id}>
+                <td>{task.name}</td>
+                <td>{`${startTime.toLocaleTimeString()}`}</td>
+                <td>{task.stopTime === null ? "" : `${stopTime?.toLocaleTimeString()}`}</td>
+                <td></td>
+                <td>
+                  <button onClick={() => handleTaskStop(task.id)}>Stop</button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
-  )
-}
+  );
+};
 
-export default Tasks
+export default Tasks;

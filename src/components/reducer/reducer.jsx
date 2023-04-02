@@ -1,9 +1,8 @@
-import { ADD_PROJECT, ADD_TASK, START_TIMER, STOP_TIMER } from "../actionType/actionType";
+import { ADD_PROJECT, ADD_TASK, STOP_TIMER } from "../actionType/actionType";
 
 const initialState = {
     projects : [],
     tasks : [],
-    timer : {}
 }
 
 export const projectReducer = (state = initialState , action)=>{
@@ -19,32 +18,27 @@ export const projectReducer = (state = initialState , action)=>{
             ...state,
             tasks: [...state.tasks,payload],
         }
-        case START_TIMER : 
-        return {
-            ...state,
-           timer : {
-            ...state.timer,
-            time:{
-                projectId : payload.projectId,
-                startTime : payload.startTime,
-            }
-           }
-        }
         case STOP_TIMER:
-            const totalTime = (payload.endTime - state.timer[payload.taskId].startTime) / (1000 * 60 * 60);
+            const currentTask = state.tasks.findIndex((task) => task.id === payload.taskId);
+            if (currentTask === -1){
+                return
+            }
+            const task = state.tasks[currentTask]
+            if(task.stopTime !== null){
+                alert('Task Already Stopped')
+                    return
+            }
+            const now = new Date()
+            const updatedTask = {
+                ...task,
+                stopTime : now
+            }
+            const updatedTasks = [...state.tasks]
+            updatedTasks[currentTask] = updatedTask
             return {
                 ...state,
-                timer: {
-                    ...state.timer,
-                    stopTimer : {
-                        ...state.timer[payload.taskId],
-                        endTime: payload.endTime,
-                        totalTime: totalTime,
-                    },
-                },
+                tasks: updatedTasks
             };
-
-
         default : 
         return state
     }

@@ -12,21 +12,12 @@ const addTask = (task)=>{
         payload : task,
     }
 }
-const startTimer = (task)=>{
-    return {
-        type : START_TIMER,
-        payload: {
-            taskId: task.id,
-            projectId: task.projectId,
-            startTime: new Date().getTime(),
-        },
-}
-}
-const stopTimer = (taskId , endTime)=>{
+
+const stopTimer = (taskId)=>{
     return {
         type : STOP_TIMER,
-        payload : {taskId,endTime},
+        payload : {taskId},
     }
 }
 
-export {addProject,addTask,startTimer,stopTimer}
+export {addProject,addTask,stopTimer}

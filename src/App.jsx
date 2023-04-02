@@ -6,7 +6,6 @@ import Tasks from './components/Tasks/Tasks';
 function App() {
 
 
-
   return (
     <div className="App">
       <h1>Time Tracking Application</h1>
