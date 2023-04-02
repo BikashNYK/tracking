@@ -71,6 +71,7 @@ const Tasks = () => {
       <table style={{ width: '90%', textAlign: 'center', marginTop: '30px' }}>
         <thead>
           <tr>
+            <th>Project Name</th>
             <th>Task Name</th>
             <th>Starting Time</th>
             <th>Ending Time</th>
@@ -91,6 +92,7 @@ const Tasks = () => {
 
             return (
               <tr key={task.id}>
+                <td>{task.projectId}</td>
                 <td>{task.name}</td>
                 <td>{`${startTime.toLocaleTimeString()}`}</td>
                 <td>{task.stopTime === null ? "" : `${stopTime?.toLocaleTimeString()}`}</td>
